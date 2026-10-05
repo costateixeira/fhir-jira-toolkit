@@ -22,7 +22,7 @@ each repository.
 
 Keep these invariants:
 
-- Open one draft PR per repository touched.
+- Before each PR, open the pre-PR preview (workflow step 13a) and ask the user; then open one draft PR per repository touched.
 - Before editing any FHIR Core resource, ask the user to confirm the exact
   release-note heading or label unless the current request already supplies
   it. Ask once when one label applies to the whole batch; otherwise request a

@@ -38,7 +38,9 @@ Key flow:
    ticket-specific published-output QA verdict.
 8. Generate the synopsis only after the final publisher and semantic QA pass.
 9. Format the commit and PR text with `scripts/format_messages.py`.
-10. Commit, push, open a draft PR, and monitor CI.
+10. Commit and push, then open the pre-PR preview (one browser window: the
+    JIRA ticket, the generated page, the GitHub diff) and ask the user before
+    opening the draft PR; then monitor CI.
 
 For a non-trivial disposition, stop and confirm the edit plan before writing.
 If CI fails, surface the failed step logs before attempting a fix.

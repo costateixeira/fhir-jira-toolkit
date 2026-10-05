@@ -533,7 +533,42 @@ git add <part-2-files>
 git commit -F .jira-cache/FHIR-NNNN.c2.txt
 
 git push -u origin <branch>
+```
 
+#### 13a. Pre-PR preview (required)
+
+After the push and **before** `gh pr create`, open one new browser window with
+three tabs so the user can review the change:
+
+1. the JIRA ticket;
+2. the generated page of the changed artifact, from the local build
+   (`publish/` for FHIR Core, `output/` for the Extensions Pack and IGs) – use
+   the page inspected in step 10a, with an `#anchor` for the changed element
+   when there is one (for example
+   `publish/medicationdispense-definitions.html#MedicationDispense.partOf`);
+   repeat `--page` when the ticket changed several pages;
+3. the diff: the GitHub compare view of the pushed branch against the base
+   branch.
+
+```bash
+FHIR_JIRA_PLUGIN_ROOT="${FHIR_JIRA_PLUGIN_ROOT:-${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}}"
+python3 "${FHIR_JIRA_PLUGIN_ROOT}/skills/fhir-jira-workflow/scripts/open_preview.py" \
+  --ticket FHIR-NNNN \
+  --page publish/<page>.html#<anchor> \
+  --repo <github-slug-from-resolve_repo> --base <default-branch> --branch <branch>
+```
+
+The script prints the three URLs and opens them in a new Chrome, Edge or
+Firefox window (`--browser` to choose; it falls back to the default browser).
+Then **stop and ask the user whether to create the PR**. Create it only after
+the user confirms; if they ask for changes, make them (amend nothing that was
+pushed – add a commit), push, and show the preview again.
+
+In batch mode, run the preview once per group PR, with one `--page` per ticket.
+
+#### 13b. Open the PR
+
+```bash
 gh pr create \
   --draft \
   --repo <github-slug-from-resolve_repo>  \
@@ -662,7 +697,8 @@ flow — separate branch, separate commits, separate PR:
    `output/`; do not substitute one group-level spot check.
 9. Finalize `batch-synopses.json` from the per-ticket changes and verdicts.
 10. Format the aggregated PR body (`format_messages.py --batch ...`).
-11. Push and open the PR as a **draft** with `--repo <github_slug> --draft`.
+11. Push, open the pre-PR preview (step 13a, one `--page` per ticket), ask the
+    user, then open the PR as a **draft** with `--repo <github_slug> --draft`.
 12. Watch CI.
 
 ### B4. Final cross-repo summary

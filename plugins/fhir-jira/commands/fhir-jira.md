@@ -37,7 +37,9 @@ Key flow:
 8. Generate the synopsis **after** the publisher and semantic QA pass (must reflect final
    state, including any fix-ups).
 9. Format the commit message and PR body via `scripts/format_messages.py`.
-10. Commit, push, open the PR with `gh pr create --repo <slug>`, watch CI.
+10. Commit and push, open the pre-PR preview (skill step 13a: one browser
+    window with the JIRA ticket, the generated page and the GitHub diff), ask
+    the user, then open the PR with `gh pr create --repo <slug>`, watch CI.
 
 If the ticket disposition is non-trivial (anything beyond a typo, broken
 link, or one-line clarification), **stop and confirm the edit plan with
