@@ -22,8 +22,12 @@ Key flow:
 3. Resolve the target repository, default branch, and publisher command.
 4. `cd` into that repo's local clone (ask the user if it doesn't exist;
    never auto-clone).
-5. Sync, branch, read context, edit.
-6. Run the repository's publisher, stage every tracked file it changes with
+5. Sync, branch, read context, edit. If a deferred build is pending for the
+   repo, reuse its branch.
+6. Always ask the user whether to build now or defer (skill step 8b). If
+   deferred, commit locally, record the ticket in
+   `.jira-cache/pending-build.json`, and stop; resume here when the user asks
+   to build. Otherwise run the repository's publisher, stage every tracked file it changes with
    the intentional edits (including unexpected or cross-resource source
    updates), and confirm validation errors did not increase. Exclude only
    untracked generated build artifacts. FHIR Core uses its Gradle build log;

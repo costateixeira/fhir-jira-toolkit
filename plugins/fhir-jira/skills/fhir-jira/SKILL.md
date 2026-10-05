@@ -25,8 +25,12 @@ Key flow:
 2. Fetch the ticket into a staging cache.
 3. Resolve its target repository, default branch, and publisher command.
 4. Enter the user's local clone, asking if it does not exist.
-5. Sync, branch, read context, and edit.
-6. Run the correct publisher. Review and stage every tracked file it changes
+5. Sync, branch, read context, and edit. If a deferred build is pending for
+   the repo, reuse its branch.
+6. Always ask the user whether to build now or defer (step 8b). If deferred,
+   commit locally, record the ticket in `.jira-cache/pending-build.json`, and
+   stop; resume here when the user asks to build. Otherwise run the correct
+   publisher. Review and stage every tracked file it changes
    with the intentional edits, even when the file is unexpected or belongs to
    another resource; exclude only untracked generated build artifacts. Then
    confirm the QA result did not regress.

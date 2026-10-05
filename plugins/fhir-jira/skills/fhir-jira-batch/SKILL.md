@@ -29,6 +29,8 @@ Keep these invariants:
   resource-to-label mapping. Do not infer the label from JIRA Change Impact.
 - Create one commit per ticket within each repository PR.
 - Run the publisher once after disjoint edits, or between overlapping edits.
+  Before every publisher run, ask the user whether to build now or defer
+  (workflow step 8b); never start a build without that answer.
 - After every publisher run, stage every tracked file it changes with the
   intentional edits, including unexpected or cross-resource source updates.
   Never restore or omit one to narrow the diff; exclude only untracked

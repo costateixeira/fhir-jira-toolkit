@@ -25,6 +25,8 @@ Key invariants:
 - **One commit per ticket** within a repo's PR. Reviewers cherry-pick.
 - Run the IG Publisher once per group (after all that group's edits) when
   the tickets touch disjoint files; run between tickets when they overlap.
+  Before every publisher run, ask the user whether to build now or defer
+  (skill step 8b); never start a build without that answer.
 - After every publisher run, stage every tracked file it changes with the
   intentional edits, including unexpected or cross-resource source updates.
   Never restore or omit one to narrow the diff; exclude only untracked

@@ -199,6 +199,11 @@ git checkout -b fhir-NNNN-<short-slug>
 The slug should be 3-5 lowercase words, hyphenated, derived from the ticket
 summary. Strip "FHIR", "[FHIR Core]", and similar prefixes.
 
+**Exception — pending deferred build.** If `.jira-cache/pending-build.json`
+exists in this repo (see step 8b), do not create a new branch from the default
+branch. Check out the branch recorded there and continue on it, so this ticket
+joins the pending set. Tell the user which tickets are already pending on it.
+
 ### 6. Read the spec context
 
 Before editing, read:
@@ -276,6 +281,41 @@ See **"Record every change under a user-confirmed release-note label"** in
 `references/fhir-authoring.md` for the exact markup, placement, duplicate
 rules, and published-output QA requirements. This does **not** apply to IGs or
 the Extensions Pack.
+
+### 8b. Build checkpoint — always ask (required)
+
+After the ticket's edits (and step 8a) are done, **always ask the user whether
+to build now or defer the build**, even for a trivial ticket. Do not start the
+publisher without an answer. List the tickets that would be covered by the
+build (this one plus any already in `.jira-cache/pending-build.json`).
+
+- **Build now** → continue with step 9 for every pending ticket on the branch.
+- **Defer build** →
+  1. Write a draft synopsis of the edit (as batch mode does per ticket),
+     generate the commit text with `format_messages.py` (step 12), stage only
+     the ticket's intentional edits (explicit paths), and commit locally. Do
+     not push.
+  2. Add the ticket to `.jira-cache/pending-build.json` in this repo:
+     `{"branch": "<branch>", "tickets": [{"key": "...", "commit": "<sha>",
+     "files": [...]}]}` (create it if absent; append otherwise).
+  3. Stop and tell the user the ticket is edited and committed locally, the
+     build is pending, and which tickets are now pending. The next ticket for
+     this repo reuses the branch (step 5 exception).
+
+When the user later asks to build (e.g. "build now", "build the pending
+tickets"), resume at step 9 in that repo on the recorded branch. Every rule
+from steps 9–14 still applies, per ticket:
+
+- Stage tracked publisher changes in a separate commit
+  (`Publisher updates for <keys>`), never restoring or omitting any.
+- Parse the QA delta once for the whole build.
+- Run step 10a published-output QA **separately for every pending ticket**.
+- If QA forces a fix to a ticket's edit, commit the fix with that ticket's key
+  in the message and update its synopsis to reflect the final state.
+- With one pending ticket, open the single-ticket PR. With several, format the
+  PR body with `format_messages.py --batch` and open **one draft PR** for the
+  branch, like a batch group.
+- Delete `.jira-cache/pending-build.json` once the PR is open.
 
 ### 9. Run the publisher
 
@@ -567,7 +607,11 @@ flow — separate branch, separate commits, separate PR:
    release-note label (step 8a) in that same commit.
 5. Run the publisher **once** at the end of the group's edits if the
    tickets touch disjoint files. If they touch the same file, run between
-   tickets so you can localize errors.
+   tickets so you can localize errors. Before **every** publisher run, apply
+   the step 8b build checkpoint: ask the user whether to build now or defer.
+   If deferred, record the group's committed tickets in
+   `.jira-cache/pending-build.json`, move on to the next ticket or group, and
+   resume from this step when the user asks to build.
 6. After every publisher run, review and stage every tracked file it changed,
    including unexpected or cross-resource source updates. Include these files
    in the group PR; never restore or omit them to narrow the diff. Continue to
