@@ -18,6 +18,14 @@ After installing the `fhir-jira` plugin from this marketplace:
 - **`/fhir-jira-batch <filter-id|FHIR-NNNN,FHIR-NNNN,...>`** — batch
   workflow. Groups tickets by target repo and produces **one draft PR per repo**
   touched, with one commit per ticket inside each.
+- **`/jira-check FHIR-NNNN [master|branch:NAME|local] [page#anchor]`** — read-only
+  check that a resolved ticket is applied in a build: shows the ticket, the
+  updated page(s) and the PR diff in one browser window, gives an opinion for
+  the user's review, and records the verdict and the JIRA closing comment.
+  Several tickets are presented one at a time.
+- **`/jira-progress [new|same]`** — updates a burn-up chart of the tracked
+  tickets (one bar per iteration, which the user defines) from the latest JIRA
+  export and the PRs on GitHub, logs what changed, and opens the chart.
 
 ### Codex skills
 
@@ -37,6 +45,16 @@ After installing the `fhir-jira` plugin from this marketplace:
   a baseline. Exits non-zero on regression.
 - **`format_messages.py`** — generates commit messages and PR bodies in
   the canonical format. Single-ticket and batch modes.
+- **`open_preview.py`** — opens the pre-PR preview: one browser window with
+  the JIRA ticket, the generated page(s) and the GitHub compare diff.
+- **`check_applied.py`** — collects the evidence that a ticket is applied in a
+  build (master, a branch build, or local) and writes a report for
+  `/jira-check`; `--pr` adds the PR diff tab.
+- **`progress_chart.py`** — classifies the tracked tickets (applied, done, in
+  PR, voted, disposition, none) and writes the burn-up chart for
+  `/jira-progress` (`progress-config.json` per project).
+- **`wiki2html.py`** — converts JIRA/Confluence wiki markup (agendas,
+  dispositions) to HTML that pastes cleanly into the Confluence editor.
 
 ### Config
 
@@ -330,7 +348,9 @@ fhir-jira-toolkit/                                  ← marketplace root
         │   └── plugin.json                          ← Codex manifest
         ├── commands/
         │   ├── fhir-jira.md
-        │   └── fhir-jira-batch.md
+        │   ├── fhir-jira-batch.md
+        │   ├── jira-check.md
+        │   └── jira-progress.md
         ├── hooks/
         │   └── check-update.py                     ← session-start update check
         └── skills/
