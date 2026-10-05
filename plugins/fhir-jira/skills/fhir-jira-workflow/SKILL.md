@@ -500,11 +500,38 @@ python3 "${FHIR_JIRA_PLUGIN_ROOT}/skills/fhir-jira-workflow/scripts/format_messa
 
 Read both output files and review them.
 
-### 13. Commit, push, open PR
+### 13. Commit, push, preview, open PR
+
+**Split commits only for distinct parts of the work**, so the reviewer can
+pick individual changes without wading through trivial splits:
+
+- Use one commit for the ticket by default. Split only when the ticket has
+  parts a reviewer might want to take separately – for example, a definition
+  change and a new example, or changes to two different resources. Commit the
+  main change first. Subject: `FHIR-NNNN: <what this part does>`; body: a
+  sentence on the change, the ticket URL, and the co-author trailer.
+- A small change and its release-note entry (step 8a) are **one** commit; the
+  release note goes with the change it describes.
+- A file that the build regenerated **because of** the ticket's edit (for
+  example a `*-mapping-exceptions.xml` that picks up a changed comment) does not
+  get its own commit: stage it together with the change that caused it, and
+  say so in that commit's body.
+- Build drift unrelated to the ticket is not committed (see the project's rules).
+- The formatted message from step 12 (`.jira-cache/FHIR-NNNN.commit.txt`) is the
+  source for the commit bodies and for the PR; the PR body is unchanged.
+- Never mix files from different tickets in one commit.
 
 ```bash
-git add <intentional-files> <all-tracked-files-changed-by-publisher>
+# Default: one commit for the ticket (change + release note + its build consequences)
+git add <edited-files> <release-note-file> [<build consequences>]
 git commit -F .jira-cache/FHIR-NNNN.commit.txt
+
+# Only when the ticket has distinct parts: one commit per part
+git add <part-1-files> [<its build consequences>]
+git commit -F .jira-cache/FHIR-NNNN.c1.txt
+git add <part-2-files>
+git commit -F .jira-cache/FHIR-NNNN.c2.txt
+
 git push -u origin <branch>
 
 gh pr create \
