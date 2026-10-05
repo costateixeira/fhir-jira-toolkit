@@ -112,6 +112,19 @@ available, invoke it with a query scoped to this work: the target repo
 learnings come back and apply them. If nothing is installed or no
 learnings match, proceed normally.
 
+### 0a. Track progress in an apply plan (when one exists)
+
+If the user works from an apply plan – a Markdown file in the repository's
+`.jira-cache/` whose name contains `apply-plan` (for example
+`.jira-cache/pharmacy-apply-plan.md`) – open it in the user's editor at the
+start (VS Code: `code -r <file>`), and keep its **Progress tracker** table
+current. Update the ticket's row in the same turn as each milestone: branch
+created, build running and its result, preview shown, PR opened (number), CI
+result, merged; also record branch syncs, expected conflicts between open PRs,
+and tickets put on hold. Change the tracker's "Last update" date. If the plan
+has no tracker table yet, add one at the top with the columns Ticket, Branch,
+Build, PR, CI, Status.
+
 ### 1. Fetch the ticket (cache outside any repo first)
 
 ```bash
